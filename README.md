@@ -79,7 +79,15 @@ When operating on the projector screen or using an onstage presenter remote clic
 
 ---
 
-## Live Links
+## Live Production Links (Vercel)
+
+* **Production URL:** [https://gdg-feud.vercel.app](https://gdg-feud.vercel.app)
+* **Host Control Panel:** [https://gdg-feud.vercel.app/host](https://gdg-feud.vercel.app/host)
+* **Projector Display:** [https://gdg-feud.vercel.app/display](https://gdg-feud.vercel.app/display)
+
+---
+
+## Local Development & Auditorium Links
 
 * **Launcher Hub:** `http://localhost:5173/`
 * **Host Control Room:** `http://localhost:5173/host`
