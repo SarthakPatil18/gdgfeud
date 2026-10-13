@@ -268,6 +268,7 @@ export const ProjectorDisplayView: React.FC = () => {
               onAwardPoints={() => {}}
               onSelectQuestion={() => {}}
               onSwitchToLeaderboard={() => {}}
+              isPresentationMode={true}
             />
           )}
         </MarqueeFrame>

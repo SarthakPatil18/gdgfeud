@@ -1020,10 +1020,15 @@ export const DedicatedHostPanel: React.FC = () => {
             </div>
 
             {/* Question Text */}
-            <div className="bg-black rounded-xl p-3 border border-zinc-800">
-              <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">
-                Current Question on Display
-              </span>
+            <div className="bg-zinc-950 rounded-xl p-3.5 border border-zinc-800 shadow-sm">
+              <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+                <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">
+                  Question {gameState.activeQuestionIndex + 1} on Display
+                </span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 uppercase font-bold">
+                  {currentQ.roundTitle}
+                </span>
+              </div>
               <p className="text-lg sm:text-xl font-bold text-white leading-snug">
                 "{currentQ.questionText}"
               </p>
@@ -1032,20 +1037,20 @@ export const DedicatedHostPanel: React.FC = () => {
             {/* Answer Slots Grid (Reveal / Hide) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-zinc-400">
-                  Answer Slots (Press 1–6 to Toggle)
+                <span className="text-xs font-bold uppercase text-zinc-400 tracking-wide">
+                  Answer Slots (Press Keys 1–6 to Toggle)
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleRevealAll(true)}
-                    className="text-[11px] font-bold text-white hover:underline"
+                    className="text-[11px] font-bold text-white hover:underline cursor-pointer"
                   >
                     Reveal All
                   </button>
                   <span className="text-zinc-700">•</span>
                   <button
                     onClick={() => handleRevealAll(false)}
-                    className="text-[11px] font-bold text-zinc-400 hover:text-white"
+                    className="text-[11px] font-bold text-zinc-400 hover:text-white cursor-pointer"
                   >
                     Hide All
                   </button>
@@ -1059,29 +1064,31 @@ export const DedicatedHostPanel: React.FC = () => {
                     onClick={() => handleToggleAnswer(ans.id)}
                     className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
                       ans.isRevealed
-                        ? 'bg-zinc-900 border-zinc-600 text-white shadow-sm'
+                        ? 'bg-zinc-900 border-zinc-500 text-white shadow-sm ring-1 ring-white/10'
                         : 'bg-black border-zinc-800 hover:border-zinc-700 text-zinc-400'
                     }`}
                     title={`Click or press [${idx + 1}] to toggle reveal on projector`}
                   >
-                    <div className="flex items-center gap-2.5 flex-1 truncate mr-2">
-                      <span className="w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 font-mono text-xs flex items-center justify-center shrink-0 font-bold">
+                    <div className="flex items-center gap-2.5 flex-1 min-w-0 mr-2">
+                      <span className={`w-6 h-6 rounded-full font-mono text-xs flex items-center justify-center shrink-0 font-bold ${
+                        ans.isRevealed ? 'bg-white text-black' : 'bg-zinc-800 text-zinc-400'
+                      }`}>
                         {idx + 1}
                       </span>
-                      <span className={`text-sm truncate uppercase ${ans.isRevealed ? 'text-white font-bold' : 'text-zinc-400'}`}>
+                      <span className={`text-xs sm:text-sm uppercase leading-tight line-clamp-2 ${ans.isRevealed ? 'text-white font-bold' : 'text-zinc-400'}`}>
                         {ans.text}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="font-mono font-bold text-lg text-white w-8 text-right">
+                      <span className="font-mono font-bold text-base sm:text-lg text-white w-7 text-right">
                         {ans.points}
                       </span>
                       <span
                         className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
                           ans.isRevealed
                             ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80'
-                            : 'bg-zinc-900 text-zinc-500'
+                            : 'bg-zinc-900 text-zinc-500 border border-zinc-800'
                         }`}
                       >
                         {ans.isRevealed ? 'Revealed' : `Key [${idx + 1}]`}
