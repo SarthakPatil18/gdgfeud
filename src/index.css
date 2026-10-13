@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-game: 'Alfa Slab One', cursive, serif;
+    --font-condensed: 'Bebas Neue', sans-serif;
+    --font-num: 'Teko', 'Bebas Neue', sans-serif;
+    --font-sans: 'Montserrat', 'Inter', sans-serif;
+  }
+
+  body {
+    background-color: #020617;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Custom Typography */
+.font-game {
+  font-family: 'Alfa Slab One', cursive, serif;
+}
+
+.font-condensed {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.font-numbers {
+  font-family: 'Teko', 'Bebas Neue', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.font-team {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+/* LED Matrix Dotted Background */
+.led-pattern {
+  background-color: #03143c;
+  background-image: radial-gradient(circle, #2d62d3 2px, transparent 2px);
+  background-size: 13px 13px;
+  background-position: 0 0;
+}
+
+.led-pattern-dense {
+  background-color: #031438;
+  background-image: radial-gradient(circle, #3b82f6 1.8px, transparent 1.8px);
+  background-size: 10px 10px;
+}
+
+/* Marquee Bulbs */
+.bulb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #fff3b0 35%, #f59e0b 85%, #b45309 100%);
+  box-shadow: 0 0 6px #fff7c2, 0 0 12px #f59e0b, 0 0 20px rgba(245, 158, 11, 0.6);
+  position: relative;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.bulb-sm {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #fff3b0 35%, #f59e0b 85%, #b45309 100%);
+  box-shadow: 0 0 5px #fff7c2, 0 0 10px #f59e0b, 0 0 16px rgba(245, 158, 11, 0.5);
+  position: relative;
+  z-index: 10;
+}
+
+.bulb:hover {
+  filter: brightness(1.2);
+}
+
+/* Stage Lighting Effects */
+.stage-spotlight-left {
+  background: radial-gradient(ellipse 60% 80% at 20% 0%, rgba(59, 130, 246, 0.45) 0%, rgba(30, 58, 138, 0.2) 40%, transparent 75%);
+}
+
+.stage-spotlight-right {
+  background: radial-gradient(ellipse 60% 80% at 80% 0%, rgba(59, 130, 246, 0.45) 0%, rgba(30, 58, 138, 0.2) 40%, transparent 75%);
+}
+
+.stage-spotlight-center {
+  background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(96, 165, 250, 0.35) 0%, rgba(37, 99, 235, 0.15) 50%, transparent 80%);
+}
+
+.stage-floor-glow {
+  background: radial-gradient(ellipse 75% 35% at 50% 100%, rgba(29, 78, 216, 0.6) 0%, rgba(15, 23, 42, 0) 70%);
+}
+
+/* Gold Metallic Borders */
+.gold-frame {
+  background: linear-gradient(135deg, #ffeaa7 0%, #d4af37 25%, #8c6d1f 50%, #fbd561 75%, #a67c1e 100%);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.gold-border-bevel {
+  border: 4px solid;
+  border-image: linear-gradient(to bottom right, #fff4cc, #d4af37, #78540b, #ffe082) 1;
+}
+
+/* 3D Gold Title "GDG FEUD" */
+.gold-3d-text {
+  color: #fff1a8;
+  background: linear-gradient(180deg, #ffffff 0%, #ffea85 28%, #d4a017 65%, #8f6505 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #5f3e03)
+          drop-shadow(0 4px 0 #4a3002)
+          drop-shadow(0 6px 0 #332001)
+          drop-shadow(0 10px 14px rgba(0, 0, 0, 0.9));
+}
+
+/* Glossy Panel Overlays */
+.gloss-overlay {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.15) 35%, rgba(255, 255, 255, 0) 50%);
+  pointer-events: none;
+}
+
+/* Card Flip for Question Board */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Pulse animation for score update */
+@keyframes scorePulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.12); filter: brightness(1.6) drop-shadow(0 0 20px #ffd700); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.animate-score-pulse {
+  animation: scorePulse 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Strike Flash */
+@keyframes strikeZoom {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-strike {
+  animation: strikeZoom 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Marquee bulb shimmer */
+@keyframes bulbShimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.22); }
+}
+
+.bulb-pulse {
+  animation: bulbShimmer 2.2s infinite ease-in-out;
+}
