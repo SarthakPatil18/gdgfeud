@@ -439,64 +439,62 @@ export const DedicatedHostPanel: React.FC = () => {
   }, [handleUndo, updateAndBroadcast, currentQ.answers, gameState.teams]);
 
   return (
-    <div className="min-h-screen bg-[#070b16] text-white flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-black text-white flex flex-col font-sans select-none">
       
-      {/* 1. TOP DUAL-DISPLAY NAVIGATION & STATUS BAR */}
-      <header className="bg-gradient-to-r from-[#0c142b] via-[#091024] to-[#060b1a] border-b border-amber-400/40 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3 shadow-xl sticky top-0 z-40">
+      {/* 1. TOP PRO CONTROL BAR */}
+      <header className="bg-black border-b border-zinc-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40">
         
-        {/* Brand & Sync Indicator */}
+        {/* Brand & Sync Status */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-200 p-[2px] flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.5)]">
-            <div className="w-full h-full rounded-[10px] bg-black flex items-center justify-center font-game font-black text-amber-300 text-lg">
-              GDG
-            </div>
+          <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center font-bold text-white text-sm tracking-wider">
+            GDG
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-team text-base sm:text-lg uppercase tracking-wider text-white">
+              <h1 className="text-sm sm:text-base font-bold uppercase tracking-wider text-white">
                 Host Control Room
               </h1>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-900/60 border border-blue-400/50 text-blue-200">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 text-zinc-300">
                 /host
               </span>
             </div>
             
-            {/* Real-time Sync Badges */}
-            <div className="flex items-center gap-3 text-xs mt-0.5">
-              <span className="flex items-center gap-1 text-emerald-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                BroadcastChannel 0ms
+            {/* Sync Status Badges */}
+            <div className="flex items-center gap-3 text-xs mt-0.5 text-zinc-400">
+              <span className="flex items-center gap-1.5 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live Sync 0ms
               </span>
-              <span className={`flex items-center gap-1 ${syncStatus.websocket ? 'text-emerald-400' : 'text-amber-400/80'}`}>
+              <span className={`flex items-center gap-1 ${syncStatus.websocket ? 'text-zinc-300' : 'text-zinc-500'}`}>
                 <Radio className="w-3 h-3" />
-                {syncStatus.websocket ? 'WebSocket Connected' : 'WebSocket Fallback'}
+                {syncStatus.websocket ? 'WebSocket Online' : 'Local Channel'}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Global Host Actions */}
+        {/* Global Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Launch Projector Window Button */}
+          {/* Launch Projector Display */}
           <button
             onClick={openProjectorWindow}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider shadow-md hover:scale-105 transition-all"
-            title="Open /display in new window to drag to the auditorium projector"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black text-xs font-bold uppercase tracking-wider transition-all"
+            title="Open /display in new window to move to the auditorium projector"
           >
-            <ExternalLink className="w-3.5 h-3.5" /> Launch Projector Display
+            <ExternalLink className="w-3.5 h-3.5" /> Projector Display ↗
           </button>
 
           {/* Undo Action */}
           <button
             onClick={handleUndo}
             disabled={history.length === 0}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-bold uppercase transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed text-xs font-medium text-zinc-200 uppercase transition-all"
             title={history[0]?.description ? `Undo: ${history[0].description}` : 'Undo last action (Ctrl+Z)'}
           >
             <Undo2 className="w-3.5 h-3.5" /> Undo
           </button>
 
-          {/* Sound Toggle */}
+          {/* Audio Mute/Unmute */}
           <button
             onClick={() => {
               const nextVal = !gameState.settings.soundEnabled;
@@ -510,10 +508,10 @@ export const DedicatedHostPanel: React.FC = () => {
               soundEffects.setEnabled(nextVal);
               if (nextVal) soundEffects.playCorrectAnswer();
             }}
-            className={`p-1.5 rounded-xl border text-xs font-bold transition-all ${
+            className={`p-1.5 rounded-lg border text-xs font-bold transition-all ${
               gameState.settings.soundEnabled
-                ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300'
-                : 'bg-red-500/20 border-red-400 text-red-300'
+                ? 'bg-zinc-900 border-zinc-700 text-zinc-200 hover:border-zinc-500'
+                : 'bg-zinc-900 border-red-900/60 text-red-400'
             }`}
             title={gameState.settings.soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
           >
@@ -523,13 +521,13 @@ export const DedicatedHostPanel: React.FC = () => {
           {/* Fullscreen Host */}
           <button
             onClick={toggleFullscreen}
-            className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white"
+            className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white transition-all"
             title="Toggle Host Window Fullscreen (F)"
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
 
-          {/* Grand Champions Finale */}
+          {/* Declare Grand Champions */}
           <button
             onClick={() => {
               updateAndBroadcast(
@@ -538,16 +536,16 @@ export const DedicatedHostPanel: React.FC = () => {
                 'finalWinner'
               );
             }}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-xs font-team uppercase tracking-wider shadow-lg hover:scale-105 transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white text-xs font-bold uppercase tracking-wider transition-all"
             title="Trigger Grand Champions Podium & Confetti on Projector"
           >
-            <Trophy className="w-3.5 h-3.5" /> Declare Champion
+            <Trophy className="w-3.5 h-3.5 text-amber-400" /> Champion Finale
           </button>
 
           {/* Reset Game */}
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="p-1.5 rounded-xl bg-red-950/60 hover:bg-red-900 border border-red-700 text-red-300 hover:text-white"
+            className="p-1.5 rounded-lg bg-zinc-900 hover:bg-red-950/60 border border-zinc-800 hover:border-red-800 text-zinc-400 hover:text-red-400 transition-all"
             title="Reset Game"
           >
             <RotateCcw className="w-4 h-4" />
@@ -556,13 +554,13 @@ export const DedicatedHostPanel: React.FC = () => {
 
       </header>
 
-      {/* 2. PROJECTOR LIVE VIEW SELECTOR BAR */}
-      <div className="bg-[#040814] border-b border-gray-800 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
-            Projector Screen Mode:
+      {/* 2. PROJECTOR VIEW SELECTOR BAR */}
+      <div className="bg-zinc-950 border-b border-zinc-800 px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            Projector Screen:
           </span>
-          <div className="flex items-center gap-1.5 bg-black/60 p-1 rounded-xl border border-gray-700">
+          <div className="flex items-center gap-1 bg-black p-1 rounded-lg border border-zinc-800">
             <button
               onClick={() => {
                 updateAndBroadcast('Switched projector to Leaderboard', (prev) => ({
@@ -570,13 +568,13 @@ export const DedicatedHostPanel: React.FC = () => {
                   activeView: 'leaderboard',
                 }));
               }}
-              className={`px-4 py-1.5 rounded-lg text-xs font-team uppercase tracking-wider transition-all ${
+              className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
                 gameState.activeView === 'leaderboard'
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg scale-102'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-white text-black shadow'
+                  : 'text-zinc-400 hover:text-white'
               }`}
             >
-              📊 Show Leaderboard [L]
+              Leaderboard [L]
             </button>
 
             <button
@@ -586,22 +584,22 @@ export const DedicatedHostPanel: React.FC = () => {
                   activeView: 'question_board',
                 }));
               }}
-              className={`px-4 py-1.5 rounded-lg text-xs font-team uppercase tracking-wider transition-all ${
+              className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
                 gameState.activeView === 'question_board'
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg scale-102'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-white text-black shadow'
+                  : 'text-zinc-400 hover:text-white'
               }`}
             >
-              ❓ Show Question Board [Q]
+              Question Board [Q]
             </button>
           </div>
         </div>
 
         {/* Live Projector Feed Label */}
         <div className="flex items-center gap-2 text-xs">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-          <span className="text-gray-300 font-mono">
-            Projector Showing: <strong className="text-amber-300 uppercase">{gameState.activeView === 'leaderboard' ? 'LEADERBOARD' : `Q${gameState.activeQuestionIndex + 1} • ${currentQ.roundTitle}`}</strong>
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-zinc-400 font-mono">
+            On Projector: <strong className="text-white uppercase">{gameState.activeView === 'leaderboard' ? 'LEADERBOARD' : `Q${gameState.activeQuestionIndex + 1} • ${currentQ.roundTitle}`}</strong>
           </span>
         </div>
       </div>
@@ -612,34 +610,46 @@ export const DedicatedHostPanel: React.FC = () => {
         {/* LEFT COLUMN: 4 AUDITORIUM ROW TEAMS LIVE SCORING (Lg: 5 cols) */}
         <section className="lg:col-span-5 flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-team text-base uppercase tracking-wider text-amber-300 flex items-center gap-2">
-              <Sliders className="w-4 h-4" /> 4 Auditorium Teams Scoring
+            <h2 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-zinc-400" /> 4 Auditorium Teams Scoring
             </h2>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-zinc-500">
               Live sorted on projector
             </span>
           </div>
 
           <div className="flex flex-col gap-3">
             {gameState.teams.map((team, idx) => {
-              const borderColors = {
-                red: 'border-red-500/70 bg-gradient-to-br from-red-950/40 to-black/60',
-                blue: 'border-blue-500/70 bg-gradient-to-br from-blue-950/40 to-black/60',
-                green: 'border-emerald-500/70 bg-gradient-to-br from-emerald-950/40 to-black/60',
-                purple: 'border-purple-500/70 bg-gradient-to-br from-purple-950/40 to-black/60',
+              const rowColors = {
+                red: {
+                  pill: 'bg-red-500/10 text-red-400 border-red-500/30',
+                  accentBorder: 'border-l-4 border-l-red-500',
+                },
+                blue: {
+                  pill: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+                  accentBorder: 'border-l-4 border-l-blue-500',
+                },
+                green: {
+                  pill: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+                  accentBorder: 'border-l-4 border-l-emerald-500',
+                },
+                purple: {
+                  pill: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+                  accentBorder: 'border-l-4 border-l-purple-500',
+                },
               }[team.color];
 
               return (
                 <div
                   key={team.id}
-                  className={`p-3.5 rounded-2xl border-2 flex flex-col gap-2.5 shadow-lg ${borderColors}`}
+                  className={`p-3.5 rounded-xl border border-zinc-800 bg-zinc-950 flex flex-col gap-2.5 ${rowColors.accentBorder}`}
                 >
                   {/* Name, Preset and Score Display */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-black/60 border border-white/10 text-gray-300">
-                          {team.color.toUpperCase()} ROW
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${rowColors.pill}`}>
+                          Row {idx + 1} • {team.color}
                         </span>
                         {/* Quick Name Presets */}
                         <div className="flex items-center gap-1">
@@ -649,7 +659,7 @@ export const DedicatedHostPanel: React.FC = () => {
                               <button
                                 key={preset}
                                 onClick={() => handleTeamRename(team.id, preset)}
-                                className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white"
+                                className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-all"
                               >
                                 {preset}
                               </button>
@@ -661,33 +671,33 @@ export const DedicatedHostPanel: React.FC = () => {
                         type="text"
                         value={team.name}
                         onChange={(e) => handleTeamRename(team.id, e.target.value)}
-                        className="w-full bg-black/70 border border-gray-700 rounded-lg px-2.5 py-1 text-sm font-team uppercase text-white focus:border-amber-400 outline-none"
+                        className="w-full bg-black border border-zinc-800 focus:border-white rounded-lg px-2.5 py-1 text-sm font-semibold uppercase text-white outline-none transition-all"
                       />
                     </div>
 
                     {/* Direct Score Input */}
                     <div className="w-24 text-right">
-                      <label className="text-[10px] uppercase font-bold text-gray-400 block mb-0.5">
+                      <label className="text-[10px] uppercase font-bold text-zinc-500 block mb-0.5">
                         Points
                       </label>
                       <input
                         type="number"
                         value={team.score}
                         onChange={(e) => handleScoreSet(team.id, parseInt(e.target.value || '0', 10))}
-                        className="w-full bg-black/70 border border-gray-700 rounded-lg px-2 py-1 text-right font-condensed text-3xl font-black text-amber-300 focus:border-amber-400 outline-none"
+                        className="w-full bg-black border border-zinc-800 focus:border-white rounded-lg px-2 py-1 text-right font-mono text-3xl font-black text-white outline-none"
                       />
                     </div>
                   </div>
 
                   {/* Quick Score Increments & Decrements */}
-                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/5">
+                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-800/80">
                     <div className="flex items-center gap-1 flex-wrap">
-                      <span className="text-[10px] font-bold text-emerald-400 uppercase w-6">Add:</span>
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase w-6">Add:</span>
                       {[10, 25, 50, 100].map((pts) => (
                         <button
                           key={pts}
                           onClick={() => handleScoreAdjust(team.id, pts)}
-                          className="px-2 py-1 rounded-md bg-emerald-900/50 hover:bg-emerald-600 border border-emerald-500/50 text-emerald-200 text-xs font-bold transition-all hover:scale-105"
+                          className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-bold transition-all hover:border-zinc-600"
                         >
                           +{pts}
                         </button>
@@ -695,12 +705,12 @@ export const DedicatedHostPanel: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-1 flex-wrap">
-                      <span className="text-[10px] font-bold text-red-400 uppercase w-6">Sub:</span>
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase w-6">Sub:</span>
                       {[10, 25, 50].map((pts) => (
                         <button
                           key={pts}
                           onClick={() => handleScoreAdjust(team.id, -pts)}
-                          className="px-2 py-1 rounded-md bg-red-900/50 hover:bg-red-600 border border-red-500/50 text-red-200 text-xs font-bold transition-all hover:scale-105"
+                          className="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs font-bold transition-all hover:border-zinc-600"
                         >
                           -{pts}
                         </button>
@@ -715,7 +725,7 @@ export const DedicatedHostPanel: React.FC = () => {
                       placeholder="Custom points"
                       value={customDelta[team.id] || ''}
                       onChange={(e) => setCustomDelta({ ...customDelta, [team.id]: e.target.value })}
-                      className="flex-1 bg-black/60 border border-gray-700 rounded-lg px-2.5 py-1 text-xs text-white placeholder-gray-500 outline-none"
+                      className="flex-1 bg-black border border-zinc-800 focus:border-zinc-600 rounded-lg px-2.5 py-1 text-xs text-white placeholder-zinc-600 outline-none"
                     />
                     <button
                       onClick={() => {
@@ -725,7 +735,7 @@ export const DedicatedHostPanel: React.FC = () => {
                           setCustomDelta({ ...customDelta, [team.id]: '' });
                         }
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-0.5"
+                      className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold flex items-center gap-0.5"
                     >
                       <Plus className="w-3 h-3" /> Add
                     </button>
@@ -737,24 +747,24 @@ export const DedicatedHostPanel: React.FC = () => {
                           setCustomDelta({ ...customDelta, [team.id]: '' });
                         }
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold flex items-center gap-0.5"
+                      className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold flex items-center gap-0.5"
                     >
                       <Minus className="w-3 h-3" /> Sub
                     </button>
                   </div>
 
                   {/* Row Specific Strikes Controls */}
-                  <div className="flex items-center justify-between pt-1.5 border-t border-white/10 text-xs">
+                  <div className="flex items-center justify-between pt-1.5 border-t border-zinc-800/80 text-xs">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-red-400 uppercase">Strikes:</span>
+                      <span className="text-[10px] font-bold text-zinc-400 uppercase">Strikes:</span>
                       <div className="flex items-center gap-1">
                         {[1, 2, 3].map((sIndex) => (
                           <span
                             key={sIndex}
-                            className={`w-4 h-4 rounded text-[11px] font-black flex items-center justify-center font-mono ${
+                            className={`w-4 h-4 rounded text-[10px] font-black flex items-center justify-center font-mono ${
                               (team.strikes || 0) >= sIndex
-                                ? 'bg-red-600 text-white shadow-[0_0_6px_#ef4444]'
-                                : 'bg-black/60 text-gray-600 border border-white/10'
+                                ? 'bg-red-600 text-white'
+                                : 'bg-black text-zinc-700 border border-zinc-800'
                             }`}
                           >
                             X
@@ -763,7 +773,7 @@ export const DedicatedHostPanel: React.FC = () => {
                       </div>
                       {(team.strikes || 0) >= 3 && (
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-600 text-white font-bold animate-pulse">
-                          OUT (3 STRIKES)
+                          OUT
                         </span>
                       )}
                     </div>
@@ -771,15 +781,15 @@ export const DedicatedHostPanel: React.FC = () => {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleAddStrikeToTeam(team.id)}
-                        className="px-2.5 py-1 rounded-lg bg-red-900/60 hover:bg-red-600 border border-red-500/60 text-red-100 text-[11px] font-bold transition-all hover:scale-105 flex items-center gap-1 shadow-sm"
+                        className="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-white text-[11px] font-bold transition-all flex items-center gap-1"
                         title={`Give strike to ${team.name}`}
                       >
-                        <XIcon className="w-3.5 h-3.5 stroke-[3]" /> + Strike
+                        <XIcon className="w-3 h-3 stroke-[3]" /> + Strike
                       </button>
                       {(team.strikes || 0) > 0 && (
                         <button
                           onClick={() => handleClearTeamStrikes(team.id)}
-                          className="px-1.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white text-[10px]"
+                          className="px-1.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px]"
                           title="Reset strikes for this row"
                         >
                           Clear
@@ -798,12 +808,12 @@ export const DedicatedHostPanel: React.FC = () => {
           
           {/* Header & Question Selector */}
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="font-team text-base uppercase tracking-wider text-amber-300 flex items-center gap-2">
-              ❓ Question Board Live Operations
+            <h2 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+              Question Board Operations
             </h2>
             
             {/* Question Selector Tabs */}
-            <div className="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-gray-800">
+            <div className="flex items-center gap-1 bg-black p-1 rounded-lg border border-zinc-800">
               {gameState.questions.map((q, idx) => (
                 <button
                   key={q.id}
@@ -814,10 +824,10 @@ export const DedicatedHostPanel: React.FC = () => {
                       strikes: 0,
                     }));
                   }}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                  className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
                     idx === gameState.activeQuestionIndex
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'text-gray-400 hover:text-white'
+                      ? 'bg-white text-black shadow'
+                      : 'text-zinc-400 hover:text-white'
                   }`}
                 >
                   Q{idx + 1}
@@ -827,24 +837,24 @@ export const DedicatedHostPanel: React.FC = () => {
           </div>
 
           {/* Active Question Banner & Controls */}
-          <div className="p-4 rounded-2xl bg-gradient-to-b from-[#0e1730] to-[#080d1c] border-2 border-blue-900/80 shadow-xl flex flex-col gap-3.5">
+          <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 flex flex-col gap-3.5">
             
             {/* Metadata row: Round, Multiplier, Strikes, Timer */}
-            <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-blue-900/60">
+            <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-zinc-800">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full bg-blue-900/80 border border-blue-400/50 text-xs font-bold text-blue-200">
+                <span className="px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-700 text-xs font-bold text-zinc-200">
                   {currentQ.roundTitle}
                 </span>
                 {currentQ.multiplier > 1 && (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400 text-amber-300 text-xs font-bold">
+                  <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-700 text-white font-mono text-xs font-bold">
                     {currentQ.multiplier}X
                   </span>
                 )}
               </div>
 
               {/* Strikes Controls */}
-              <div className="flex items-center gap-2 bg-black/60 px-3 py-1 rounded-xl border border-red-900/60">
-                <span className="text-xs font-bold text-red-300 uppercase">Strikes:</span>
+              <div className="flex items-center gap-2 bg-black px-3 py-1 rounded-lg border border-zinc-800">
+                <span className="text-xs font-bold text-zinc-400 uppercase">Strikes:</span>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3].map((sIndex) => {
                     const isHit = gameState.strikes >= sIndex;
@@ -854,8 +864,8 @@ export const DedicatedHostPanel: React.FC = () => {
                         onClick={handleAddStrike}
                         className={`w-7 h-7 rounded border flex items-center justify-center transition-all ${
                           isHit
-                            ? 'bg-red-600 border-red-400 text-white shadow-[0_0_10px_#ef4444]'
-                            : 'bg-black/60 border-red-950 text-red-900/40 hover:text-red-400'
+                            ? 'bg-red-600 border-red-500 text-white shadow-sm'
+                            : 'bg-zinc-900 border-zinc-800 text-zinc-600 hover:text-red-400'
                         }`}
                         title={`Give strike ${sIndex} [X]`}
                       >
@@ -867,7 +877,7 @@ export const DedicatedHostPanel: React.FC = () => {
                 {gameState.strikes > 0 && (
                   <button
                     onClick={handleClearStrikes}
-                    className="text-[10px] text-gray-400 hover:text-white ml-1 px-1.5 py-0.5 rounded bg-white/10"
+                    className="text-[10px] text-zinc-400 hover:text-white ml-1 px-1.5 py-0.5 rounded bg-zinc-900"
                   >
                     Clear
                   </button>
@@ -875,7 +885,7 @@ export const DedicatedHostPanel: React.FC = () => {
               </div>
 
               {/* Countdown Timer Controls */}
-              <div className="flex items-center gap-2 bg-black/60 px-3 py-1 rounded-xl border border-blue-500/40">
+              <div className="flex items-center gap-2 bg-zinc-900 px-3 py-1 rounded-lg border border-zinc-800">
                 <button
                   onClick={() => {
                     const nextActive = !gameState.timerActive;
@@ -884,14 +894,14 @@ export const DedicatedHostPanel: React.FC = () => {
                       timerActive: nextActive,
                     }));
                   }}
-                  className="p-1 text-blue-300 hover:text-white"
+                  className="p-1 text-zinc-300 hover:text-white"
                   title={gameState.timerActive ? 'Pause Timer' : 'Start Timer'}
                 >
                   {gameState.timerActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 </button>
                 <span
                   className={`font-mono font-bold text-lg w-7 text-center ${
-                    gameState.timerSeconds <= 5 ? 'text-red-400 animate-pulse' : 'text-blue-300'
+                    gameState.timerSeconds <= 5 ? 'text-red-400 animate-pulse' : 'text-white'
                   }`}
                 >
                   {gameState.timerSeconds}s
@@ -904,7 +914,7 @@ export const DedicatedHostPanel: React.FC = () => {
                       timerSeconds: defaultTimerSeconds,
                     }));
                   }}
-                  className="text-gray-400 hover:text-white p-1"
+                  className="text-zinc-400 hover:text-white p-1"
                   title="Reset timer"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -913,23 +923,23 @@ export const DedicatedHostPanel: React.FC = () => {
             </div>
 
             {/* Dedicated Row Strikes & Steals Action Panel */}
-            <div className="bg-black/60 p-3 rounded-2xl border-2 border-red-950/70 shadow-lg flex flex-col gap-2.5">
+            <div className="bg-black p-3 rounded-xl border border-zinc-800 flex flex-col gap-2.5">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-md bg-red-600 flex items-center justify-center shadow-[0_0_8px_#ef4444]">
+                  <div className="w-5 h-5 rounded bg-red-600 flex items-center justify-center">
                     <XIcon className="w-3.5 h-3.5 text-white stroke-[3.5]" />
                   </div>
-                  <span className="text-xs font-black uppercase tracking-wider text-red-300">
-                    Row Strikes & Steal Control
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-200">
+                    Row Strikes & Steal Tracker
                   </span>
-                  <span className="text-[10px] text-gray-400 hidden md:inline">
-                    (Shortcuts: <kbd className="px-1 py-0.5 rounded bg-black border border-gray-700 text-amber-300 font-mono">Shift+1</kbd> to <kbd className="px-1 py-0.5 rounded bg-black border border-gray-700 text-amber-300 font-mono">Shift+4</kbd> or click below)
+                  <span className="text-[10px] text-zinc-500 hidden md:inline">
+                    (Shortcuts: <kbd className="px-1 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono">Shift+1</kbd> to <kbd className="px-1 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono">Shift+4</kbd>)
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleClearAllStrikes}
-                    className="text-[11px] px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white font-bold transition-all"
+                    className="text-[11px] px-2.5 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white font-medium transition-all"
                     title="Reset strikes for all rows"
                   >
                     Clear All Rows
@@ -942,28 +952,24 @@ export const DedicatedHostPanel: React.FC = () => {
                 {gameState.teams.map((team, idx) => {
                   const strikeCount = team.strikes || 0;
                   const isMax = strikeCount >= 3;
-                  const borderThemes = {
-                    red: 'border-red-500/60 bg-gradient-to-b from-red-950/50 to-black/80',
-                    blue: 'border-blue-500/60 bg-gradient-to-b from-blue-950/50 to-black/80',
-                    green: 'border-emerald-500/60 bg-gradient-to-b from-emerald-950/50 to-black/80',
-                    purple: 'border-purple-500/60 bg-gradient-to-b from-purple-950/50 to-black/80',
+                  const rowThemes = {
+                    red: 'border-l-4 border-l-red-500',
+                    blue: 'border-l-4 border-l-blue-500',
+                    green: 'border-l-4 border-l-emerald-500',
+                    purple: 'border-l-4 border-l-purple-500',
                   }[team.color];
 
                   return (
                     <div
                       key={team.id}
-                      className={`p-2.5 rounded-xl border flex flex-col justify-between gap-2 transition-all ${
-                        isMax
-                          ? 'border-red-500 bg-red-950/80 shadow-[0_0_15px_rgba(239,68,68,0.5)]'
-                          : borderThemes
-                      }`}
+                      className={`p-2.5 rounded-lg border border-zinc-800 bg-zinc-900 flex flex-col justify-between gap-2 transition-all ${rowThemes}`}
                     >
                       <div className="flex items-center justify-between gap-1">
                         <div className="truncate">
-                          <span className="text-[10px] font-bold text-gray-400 uppercase block">
+                          <span className="text-[10px] font-bold text-zinc-500 uppercase block">
                             Row {idx + 1}
                           </span>
-                          <span className="text-xs font-bold font-team uppercase text-white truncate block">
+                          <span className="text-xs font-bold uppercase text-white truncate block">
                             {team.name}
                           </span>
                         </div>
@@ -973,8 +979,8 @@ export const DedicatedHostPanel: React.FC = () => {
                               key={sIndex}
                               className={`w-4 h-4 rounded text-[10px] font-black flex items-center justify-center font-mono ${
                                 strikeCount >= sIndex
-                                  ? 'bg-red-600 text-white shadow-[0_0_6px_#ef4444]'
-                                  : 'bg-black/70 text-gray-700 border border-white/5'
+                                  ? 'bg-red-600 text-white'
+                                  : 'bg-black text-zinc-700 border border-zinc-800'
                               }`}
                             >
                               X
@@ -984,15 +990,15 @@ export const DedicatedHostPanel: React.FC = () => {
                       </div>
 
                       {isMax && (
-                        <div className="text-[10px] px-1.5 py-0.5 rounded bg-red-600 text-white font-bold text-center uppercase tracking-wider animate-pulse shadow-[0_0_10px_#ef4444]">
-                          🚨 3 STRIKES (STEAL!)
+                        <div className="text-[10px] px-1.5 py-0.5 rounded bg-red-600 text-white font-bold text-center uppercase tracking-wider animate-pulse">
+                          3 STRIKES (STEAL!)
                         </div>
                       )}
 
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <button
                           onClick={() => handleAddStrikeToTeam(team.id)}
-                          className="flex-1 py-1.5 px-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-1 shadow-md transition-all hover:scale-[1.02] active:scale-95"
+                          className="flex-1 py-1 px-2 rounded bg-red-600 hover:bg-red-500 text-white text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 transition-all"
                           title={`Add strike to Row ${idx + 1} (${team.name}) [Shift+${idx + 1}]`}
                         >
                           <XIcon className="w-3.5 h-3.5 stroke-[3.5]" /> + Strike
@@ -1000,7 +1006,7 @@ export const DedicatedHostPanel: React.FC = () => {
                         {strikeCount > 0 && (
                           <button
                             onClick={() => handleClearTeamStrikes(team.id)}
-                            className="px-2 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white text-[10px] font-bold"
+                            className="px-2 py-1 rounded bg-black hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-medium"
                             title={`Clear strikes for Row ${idx + 1}`}
                           >
                             Reset
@@ -1014,11 +1020,11 @@ export const DedicatedHostPanel: React.FC = () => {
             </div>
 
             {/* Question Text */}
-            <div className="bg-black/60 rounded-xl p-3 border border-blue-900">
-              <span className="text-[10px] uppercase font-bold text-gray-400 block mb-0.5">
+            <div className="bg-black rounded-xl p-3 border border-zinc-800">
+              <span className="text-[10px] uppercase font-bold text-zinc-500 block mb-1">
                 Current Question on Display
               </span>
-              <p className="font-team text-lg sm:text-xl text-white">
+              <p className="text-lg sm:text-xl font-bold text-white leading-snug">
                 "{currentQ.questionText}"
               </p>
             </div>
@@ -1026,20 +1032,20 @@ export const DedicatedHostPanel: React.FC = () => {
             {/* Answer Slots Grid (Reveal / Hide) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-gray-300">
-                  Answer Slots (Press 1–6 to Reveal on Projector)
+                <span className="text-xs font-bold uppercase text-zinc-400">
+                  Answer Slots (Press 1–6 to Toggle)
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleRevealAll(true)}
-                    className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300"
+                    className="text-[11px] font-bold text-white hover:underline"
                   >
                     Reveal All
                   </button>
-                  <span className="text-gray-600">•</span>
+                  <span className="text-zinc-700">•</span>
                   <button
                     onClick={() => handleRevealAll(false)}
-                    className="text-[11px] font-bold text-gray-400 hover:text-white"
+                    className="text-[11px] font-bold text-zinc-400 hover:text-white"
                   >
                     Hide All
                   </button>
@@ -1051,31 +1057,31 @@ export const DedicatedHostPanel: React.FC = () => {
                   <div
                     key={ans.id}
                     onClick={() => handleToggleAnswer(ans.id)}
-                    className={`p-2.5 rounded-xl border-2 flex items-center justify-between cursor-pointer transition-all hover:scale-[1.02] ${
+                    className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
                       ans.isRevealed
-                        ? 'bg-gradient-to-r from-emerald-950/60 to-black/80 border-emerald-500/80 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
-                        : 'bg-black/60 border-gray-800 hover:border-gray-600'
+                        ? 'bg-zinc-900 border-zinc-600 text-white shadow-sm'
+                        : 'bg-black border-zinc-800 hover:border-zinc-700 text-zinc-400'
                     }`}
                     title={`Click or press [${idx + 1}] to toggle reveal on projector`}
                   >
                     <div className="flex items-center gap-2.5 flex-1 truncate mr-2">
-                      <span className="w-6 h-6 rounded-full bg-amber-400/20 border border-amber-400 text-amber-300 font-game text-xs flex items-center justify-center shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-zinc-800 text-zinc-300 font-mono text-xs flex items-center justify-center shrink-0 font-bold">
                         {idx + 1}
                       </span>
-                      <span className={`font-team text-sm truncate uppercase ${ans.isRevealed ? 'text-white font-bold' : 'text-gray-400'}`}>
+                      <span className={`text-sm truncate uppercase ${ans.isRevealed ? 'text-white font-bold' : 'text-zinc-400'}`}>
                         {ans.text}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="font-condensed font-bold text-lg text-amber-300 w-8 text-right">
+                      <span className="font-mono font-bold text-lg text-white w-8 text-right">
                         {ans.points}
                       </span>
                       <span
-                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
                           ans.isRevealed
-                            ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/50'
-                            : 'bg-gray-800 text-gray-400'
+                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80'
+                            : 'bg-zinc-900 text-zinc-500'
                         }`}
                       >
                         {ans.isRevealed ? 'Revealed' : `Key [${idx + 1}]`}
@@ -1087,34 +1093,34 @@ export const DedicatedHostPanel: React.FC = () => {
             </div>
 
             {/* ROUND BANK ACCUMULATOR & AWARD POINTS SECTION */}
-            <div className="mt-2 p-3.5 rounded-xl bg-gradient-to-r from-amber-950/30 via-black/80 to-blue-950/30 border border-amber-400/60 flex flex-col gap-3">
+            <div className="mt-2 p-3.5 rounded-xl bg-black border border-zinc-800 flex flex-col gap-3">
               
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-amber-300/80 block">
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 block">
                     Accumulated Round Bank
                   </span>
-                  <div className="font-condensed text-3xl font-black text-[#ffd700] drop-shadow-[0_0_10px_#ffd700]">
-                    {roundBank} <span className="text-sm font-sans text-amber-300">PTS</span>
+                  <div className="font-mono text-3xl font-black text-white">
+                    {roundBank} <span className="text-sm font-sans text-zinc-400 font-normal">PTS</span>
                   </div>
                 </div>
 
                 {/* Duplicate Award Status Badge */}
                 {currentQ.isRoundAwarded ? (
                   <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950 border border-emerald-500 text-emerald-300 text-xs font-bold">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Awarded to {gameState.teams.find((t) => t.id === currentQ.awardedToTeamId)?.name || 'Team'}
+                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs font-bold">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Awarded to {gameState.teams.find((t) => t.id === currentQ.awardedToTeamId)?.name || 'Team'}
                     </span>
                     <button
                       onClick={handleUnlockRoundAward}
-                      className="text-xs text-amber-300 hover:underline"
+                      className="text-xs text-zinc-400 hover:text-white underline"
                       title="Unlock if awarded by mistake"
                     >
                       Re-award?
                     </button>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-zinc-500">
                     Ready to award to winning row
                   </span>
                 )}
@@ -1123,11 +1129,11 @@ export const DedicatedHostPanel: React.FC = () => {
               {/* Award Buttons for 4 Teams */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {gameState.teams.map((t) => {
-                  const colorClasses = {
-                    red: 'bg-red-700 hover:bg-red-600 border-red-400 text-white',
-                    blue: 'bg-blue-700 hover:bg-blue-600 border-blue-400 text-white',
-                    green: 'bg-emerald-700 hover:bg-emerald-600 border-emerald-400 text-white',
-                    purple: 'bg-purple-700 hover:bg-purple-600 border-purple-400 text-white',
+                  const awardButtonStyles = {
+                    red: 'bg-zinc-900 hover:bg-red-600 hover:text-white text-red-400 border-red-500/30',
+                    blue: 'bg-zinc-900 hover:bg-blue-600 hover:text-white text-blue-400 border-blue-500/30',
+                    green: 'bg-zinc-900 hover:bg-emerald-600 hover:text-white text-emerald-400 border-emerald-500/30',
+                    purple: 'bg-zinc-900 hover:bg-purple-600 hover:text-white text-purple-400 border-purple-500/30',
                   }[t.color];
 
                   return (
@@ -1135,7 +1141,7 @@ export const DedicatedHostPanel: React.FC = () => {
                       key={t.id}
                       onClick={() => handleAwardRoundPoints(t.id)}
                       disabled={roundBank <= 0 || currentQ.isRoundAwarded}
-                      className={`px-3 py-2 rounded-xl border font-team text-xs uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md hover:scale-103 ${colorClasses}`}
+                      className={`px-3 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-30 disabled:cursor-not-allowed ${awardButtonStyles}`}
                       title={
                         currentQ.isRoundAwarded
                           ? 'Already awarded for this round'
@@ -1159,18 +1165,18 @@ export const DedicatedHostPanel: React.FC = () => {
       {/* CONFIRM RESET DIALOG */}
       {showResetConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-[#111827] border-2 border-red-500 p-6 text-center shadow-2xl">
-            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-2" />
-            <h3 className="font-team text-xl text-white uppercase mb-2">
+          <div className="w-full max-w-md rounded-2xl bg-zinc-950 border border-zinc-800 p-6 text-center shadow-2xl">
+            <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-2" />
+            <h3 className="text-lg font-bold text-white uppercase mb-2">
               Reset Entire Game?
             </h3>
-            <p className="text-sm text-gray-300 mb-6">
-              This will restore initial team scores (450, 320, 210, 150) and reset all revealed answers and strikes on both this host screen and the projector display.
+            <p className="text-xs text-zinc-400 mb-6">
+              This will restore initial team scores and reset all revealed answers and strikes on both this host screen and the projector display.
             </p>
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => setShowResetConfirm(false)}
-                className="px-5 py-2 rounded-xl bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold uppercase"
+                className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold uppercase transition-all"
               >
                 Cancel
               </button>
@@ -1182,7 +1188,7 @@ export const DedicatedHostPanel: React.FC = () => {
                     settings: gameState.settings,
                   }));
                 }}
-                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold uppercase shadow-lg"
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold uppercase shadow-lg transition-all"
               >
                 Confirm Reset
               </button>
