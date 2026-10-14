@@ -4,6 +4,7 @@ export type AudioAssetKey =
   | 'questionReveal'
   | 'correctDing'
   | 'strikeBuzzer'
+  | 'thirdStrike'
   | 'countdown'
   | 'roundWin'
   | 'finalWinner';
@@ -66,6 +67,14 @@ export const AUDIO_EVENT_DEFINITIONS: AudioAssetDefinition[] = [
     description: 'Classic harsh square-wave buzzer played when an incorrect guess receives a strike (X).',
     recommendedDuration: '1s – 2s',
     suggestedFileName: 'strike_buzzer.mp3',
+  },
+  {
+    key: 'thirdStrike',
+    label: 'Third-Strike Dramatic Buzzer',
+    category: 'sfx',
+    description: 'Prominent, heavy 3rd-strike buzzer played when a team accumulates three strikes (XXX).',
+    recommendedDuration: '2s – 3s',
+    suggestedFileName: 'third_strike_buzzer.mp3',
   },
   {
     key: 'countdown',

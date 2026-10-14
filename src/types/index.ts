@@ -21,6 +21,8 @@ export interface Answer {
   text: string;
   points: number;
   isRevealed: boolean;
+  isAwarded?: boolean;
+  awardedToTeamId?: string | null;
 }
 
 export interface Question {
@@ -38,12 +40,14 @@ export interface GameSettings {
   timerDuration: number;
   soundEnabled: boolean;
   projectorSoundEnabled: boolean;
+  volume: number;
   autoSortLeaderboard: boolean;
   enableCelebrationEffects: boolean;
 }
 
 export interface GameState {
   teams: Team[];
+  activeTeamId: string;
   activeView: 'leaderboard' | 'question_board';
   activeQuestionIndex: number;
   questions: Question[];
@@ -54,6 +58,7 @@ export interface GameState {
   settings: GameSettings;
   winnerDeclared: boolean;
   lastUpdated?: number;
+  lastActionText?: string;
 }
 
 export interface HistoryEntry {

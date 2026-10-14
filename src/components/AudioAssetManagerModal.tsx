@@ -36,14 +36,20 @@ export const AudioAssetManagerModal: React.FC<AudioAssetManagerModalProps> = ({
   };
 
   useEffect(() => {
+    let isMounted = true;
     if (isOpen) {
-      refreshMetadata();
+      audioStorage.getAllMetadata().then((meta) => {
+        if (isMounted) setMetadataMap(meta);
+      });
     }
+    return () => {
+      isMounted = false;
+    };
   }, [isOpen]);
 
   useEffect(() => {
     return audioStorage.onAudioAssetsChanged(() => {
-      refreshMetadata();
+      audioStorage.getAllMetadata().then(setMetadataMap);
     });
   }, []);
 

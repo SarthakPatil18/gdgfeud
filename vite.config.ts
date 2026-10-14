@@ -10,9 +10,13 @@ function syncServerPlugin(): Plugin {
   return {
     name: 'gdg-feud-sync-server',
     configureServer() {
+      if (process.env.VITEST) return;
       if (!wss) {
         try {
           wss = new WebSocketServer({ port: 5174 });
+          wss.on('error', (e) => {
+            console.warn('Sync server on port 5174 note:', e.message);
+          });
           console.log('📡 GDG Feud Real-time Sync WebSocket listening on ws://0.0.0.0:5174');
 
           wss.on('connection', (ws) => {

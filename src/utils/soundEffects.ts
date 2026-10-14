@@ -4,6 +4,7 @@ import { audioStorage } from './audioStorage';
 class SoundEngine {
   private ctx: AudioContext | null = null;
   private enabled: boolean = false;
+  private volume: number = 1.0;
   private activeMusicAudio: HTMLAudioElement | null = null;
   private activeMusicKey: AudioAssetKey | null = null;
 
@@ -20,6 +21,17 @@ class SoundEngine {
 
   public isEnabled(): boolean {
     return this.enabled;
+  }
+
+  public setVolume(vol: number) {
+    this.volume = Math.max(0, Math.min(1, vol));
+    if (this.activeMusicAudio) {
+      this.activeMusicAudio.volume = this.volume;
+    }
+  }
+
+  public getVolume(): number {
+    return this.volume;
   }
 
   private initContext() {
@@ -73,7 +85,7 @@ class SoundEngine {
         }
 
         const audio = new Audio(url);
-        audio.volume = 1.0;
+        audio.volume = this.volume;
 
         if (isMusic) {
           this.activeMusicAudio = audio;
@@ -109,6 +121,9 @@ class SoundEngine {
       case 'strikeBuzzer':
         this.synthBuzzer();
         break;
+      case 'thirdStrike':
+        this.synthThirdStrike();
+        break;
       case 'questionReveal':
         this.synthWhoosh();
         break;
@@ -132,6 +147,10 @@ class SoundEngine {
 
   public playStrike() {
     return this.playAsset('strikeBuzzer');
+  }
+
+  public playThirdStrike() {
+    return this.playAsset('thirdStrike');
   }
 
   public playQuestionReveal() {
@@ -244,6 +263,40 @@ class SoundEngine {
     osc2.start(now);
     osc1.stop(now + 0.65);
     osc2.stop(now + 0.65);
+  }
+
+  private synthThirdStrike() {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const oscSub = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(110.0, now);
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(116.54, now);
+    oscSub.type = 'sawtooth';
+    oscSub.frequency.setValueAtTime(55.0, now);
+
+    const peakGain = 0.45 * this.volume;
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(peakGain, now + 0.04);
+    gainNode.gain.setValueAtTime(peakGain, now + 0.75);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    oscSub.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+    oscSub.start(now);
+    osc1.stop(now + 1.15);
+    osc2.stop(now + 1.15);
+    oscSub.stop(now + 1.15);
   }
 
   private synthWhoosh() {

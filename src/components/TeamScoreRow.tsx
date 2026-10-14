@@ -26,21 +26,27 @@ export const TeamScoreRow: React.FC<TeamScoreRowProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(teamName);
-  const [prevScore, setPrevScore] = useState(score);
+  const prevScoreRef = React.useRef(score);
   const [scorePulse, setScorePulse] = useState(false);
 
   useEffect(() => {
-    if (score !== prevScore) {
-      setScorePulse(true);
-      const timer = setTimeout(() => setScorePulse(false), 500);
-      setPrevScore(score);
-      return () => clearTimeout(timer);
+    if (score !== prevScoreRef.current) {
+      prevScoreRef.current = score;
+      const pulseTimer = setTimeout(() => setScorePulse(true), 0);
+      const resetTimer = setTimeout(() => setScorePulse(false), 500);
+      return () => {
+        clearTimeout(pulseTimer);
+        clearTimeout(resetTimer);
+      };
     }
-  }, [score, prevScore]);
+  }, [score]);
 
-  useEffect(() => {
-    setEditValue(teamName);
-  }, [teamName]);
+  const handleStartEdit = () => {
+    if (!isPresentationMode && onEditName) {
+      setEditValue(teamName);
+      setIsEditing(true);
+    }
+  };
 
   const handleNameSubmit = () => {
     setIsEditing(false);
@@ -133,11 +139,7 @@ export const TeamScoreRow: React.FC<TeamScoreRowProps> = ({
             />
           ) : (
             <div
-              onClick={() => {
-                if (!isPresentationMode && onEditName) {
-                  setIsEditing(true);
-                }
-              }}
+              onClick={handleStartEdit}
               className="font-team font-black text-2xl sm:text-3xl md:text-4.5xl lg:text-5xl text-white tracking-wider text-center uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] cursor-pointer truncate max-w-full px-2 hover:scale-[1.01] transition-transform"
               title={!isPresentationMode ? 'Double click or click to edit team name' : undefined}
             >

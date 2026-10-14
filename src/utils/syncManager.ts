@@ -265,7 +265,24 @@ class SyncManager {
   public getStoredState(): GameState | null {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : null;
+      if (!saved) return null;
+      const parsed = JSON.parse(saved) as GameState;
+      if (!parsed || !Array.isArray(parsed.teams) || parsed.teams.length === 0) return null;
+      if (!parsed.activeTeamId && parsed.teams[0]) {
+        parsed.activeTeamId = parsed.teams[0].id;
+      }
+      if (!parsed.settings) {
+        parsed.settings = {
+          allowNegativeScores: false,
+          timerDuration: 30,
+          soundEnabled: true,
+          projectorSoundEnabled: false,
+          volume: 1.0,
+          autoSortLeaderboard: true,
+          enableCelebrationEffects: true,
+        };
+      }
+      return parsed;
     } catch {
       return null;
     }

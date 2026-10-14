@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, RotateCcw, X as XIcon, Trophy, ArrowRight, ArrowLeft } from 'lucide-react';
+import { X as XIcon, Trophy, ArrowLeft, ArrowRight } from 'lucide-react';
 import type { Question, Team } from '../types';
 import { AnswerSlot } from './AnswerSlot';
 import { soundEffects } from '../utils/soundEffects';
@@ -11,6 +11,9 @@ interface QuestionBoardProps {
   teams: Team[];
   strikes: number;
   lastStrikeTeamId?: string | null;
+  activeTeamId?: string;
+  timerSeconds?: number;
+  timerActive?: boolean;
   onRevealAnswer: (answerId: string) => void;
   onAddStrike: () => void;
   onAddStrikeToTeam?: (teamId: string) => void;
@@ -28,6 +31,9 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
   teams,
   strikes,
   lastStrikeTeamId,
+  activeTeamId,
+  timerSeconds: timerSecondsProp,
+  timerActive: _timerActiveProp,
   onRevealAnswer,
   onAddStrike,
   onAddStrikeToTeam,
@@ -37,27 +43,29 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
   onSwitchToLeaderboard,
   isPresentationMode = false,
 }) => {
-  // Timer state
-  const [timerSeconds, setTimerSeconds] = useState(30);
-  const [timerRunning, setTimerRunning] = useState(false);
+  // Timer state fallback if not controlled externally
+  const [localTimerSeconds, setLocalTimerSeconds] = useState(30);
+  const [localTimerRunning, setLocalTimerRunning] = useState(false);
   const [strikeFlash, setStrikeFlash] = useState(false);
+
+  const displayTimerSeconds = timerSecondsProp !== undefined ? timerSecondsProp : localTimerSeconds;
 
   // Calculate current revealed round points
   const revealedPoints = question.answers
-    .filter((a) => a.isRevealed)
-    .reduce((sum, a) => sum + a.points, 0);
+    ? question.answers.filter((a) => a.isRevealed).reduce((sum, a) => sum + (a.points || 0), 0)
+    : 0;
 
-  const totalRoundPoints = revealedPoints * question.multiplier;
+  const totalRoundPoints = revealedPoints * (question.multiplier || 1);
 
-  // Timer countdown hook
+  // Local timer fallback (only when not in presentation mode and timerSecondsProp not passed)
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
-    if (timerRunning && timerSeconds > 0) {
+    if (timerSecondsProp === undefined && localTimerRunning && localTimerSeconds > 0) {
       interval = setInterval(() => {
-        setTimerSeconds((prev) => {
+        setLocalTimerSeconds((prev) => {
           if (prev <= 1) {
-            setTimerRunning(false);
-            soundEffects.playStrike(); // warning buzzer at 0s
+            setLocalTimerRunning(false);
+            soundEffects.playStrike();
             return 0;
           }
           if (prev <= 6) {
@@ -68,28 +76,43 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [timerRunning, timerSeconds]);
+  }, [timerSecondsProp, localTimerRunning, localTimerSeconds]);
 
-  // Trigger visual strike flash when strikes change
+  // Trigger visual strike flash only when strikes increase
+  const prevStrikesRef = React.useRef({ strikes, lastStrikeTeamId });
   useEffect(() => {
-    if (strikes > 0) {
-      setStrikeFlash(true);
-      const timer = setTimeout(() => setStrikeFlash(false), 900);
-      return () => clearTimeout(timer);
+    const prev = prevStrikesRef.current;
+    const currentTeamStrikes = lastStrikeTeamId
+      ? teams.find((t) => t.id === lastStrikeTeamId)?.strikes || 0
+      : strikes;
+    const prevTeamStrikes = prev.lastStrikeTeamId
+      ? teams.find((t) => t.id === prev.lastStrikeTeamId)?.strikes || 0
+      : prev.strikes;
+
+    prevStrikesRef.current = { strikes, lastStrikeTeamId };
+
+    if (currentTeamStrikes > prevTeamStrikes) {
+      const startTimer = setTimeout(() => setStrikeFlash(true), 0);
+      const endTimer = setTimeout(() => setStrikeFlash(false), 1100);
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(endTimer);
+      };
     }
-  }, [strikes]);
+  }, [strikes, lastStrikeTeamId, teams]);
 
   const handleStrikeClick = () => {
+    if (isPresentationMode) return;
     onAddStrike();
-    soundEffects.playStrike();
   };
 
   const handleRevealAnswer = (answerId: string) => {
+    if (isPresentationMode) return;
     onRevealAnswer(answerId);
-    soundEffects.playCorrectAnswer();
   };
 
   const handleRevealNextAnswer = () => {
+    if (isPresentationMode) return;
     const nextUnrevealed = question.answers.find((a) => !a.isRevealed);
     if (nextUnrevealed) {
       handleRevealAnswer(nextUnrevealed.id);
@@ -97,7 +120,7 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
   };
 
   const handleAwardToTeam = (teamId: string) => {
-    if (totalRoundPoints <= 0) return;
+    if (isPresentationMode || totalRoundPoints <= 0) return;
     onAwardPoints(teamId, totalRoundPoints);
     soundEffects.playFanfare();
   };
@@ -107,7 +130,7 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
       
       {/* Strike Big Flash Overlay */}
       {strikeFlash && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none bg-red-950/60 backdrop-blur-[2px] rounded-[18px]">
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none bg-red-950/70 backdrop-blur-[2px] rounded-[18px]">
           {/* Team Banner if lastStrikeTeamId is set */}
           {lastStrikeTeamId && (
             <div className="px-6 py-2 rounded-2xl bg-black/90 border-2 border-red-500 font-team text-xl sm:text-3xl text-red-100 uppercase tracking-widest shadow-[0_0_30px_#ef4444] mb-4 animate-bounce">
@@ -137,7 +160,7 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
             ? (teams.find((t) => t.id === lastStrikeTeamId)?.strikes || strikes) >= 3
             : strikes >= 3) && (
             <div className="px-6 py-2 rounded-full bg-red-600 text-white font-team text-sm sm:text-xl uppercase tracking-wider shadow-[0_0_30px_#ef4444] mt-4 animate-pulse">
-              🚨 3 STRIKES! STEAL OPPORTUNITY!
+              XXX 3 STRIKES REACHED
             </div>
           )}
         </div>
@@ -176,6 +199,7 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
               {teams.map((t) => {
                 const currentStrikes = t.strikes || 0;
                 const isThreeStrikes = currentStrikes >= 3;
+                const isActive = t.id === activeTeamId;
                 const badgeColors = {
                   red: 'border-red-500/80 bg-red-950/60 text-red-200',
                   blue: 'border-blue-500/80 bg-blue-950/60 text-blue-200',
@@ -186,11 +210,18 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
                 return (
                   <div
                     key={t.id}
-                    onClick={() => onAddStrikeToTeam && onAddStrikeToTeam(t.id)}
-                    className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl border text-[11px] sm:text-xs font-team uppercase flex items-center gap-1 cursor-pointer transition-all hover:scale-105 shadow-sm ${badgeColors}`}
-                    title={`Click to add strike to ${t.name}`}
+                    onClick={() => !isPresentationMode && onAddStrikeToTeam && onAddStrikeToTeam(t.id)}
+                    className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-xl border text-[11px] sm:text-xs font-team uppercase flex items-center gap-1 transition-all shadow-sm ${
+                      !isPresentationMode ? 'cursor-pointer hover:scale-105' : ''
+                    } ${badgeColors} ${isActive ? 'ring-2 ring-amber-400 font-bold scale-105 shadow-[0_0_12px_rgba(245,158,11,0.5)]' : ''}`}
+                    title={!isPresentationMode ? `Click to add strike to ${t.name}` : undefined}
                   >
-                    <span className="font-bold tracking-tight">{t.name}:</span>
+                    <span className="font-bold tracking-tight">
+                      {isActive ? '★ ' : ''}{t.name}:
+                    </span>
+                    <span className="font-mono text-amber-300 font-bold mr-0.5">
+                      {t.score}
+                    </span>
                     <div className="flex items-center gap-0.5">
                       {[1, 2, 3].map((sIndex) => (
                         <span
@@ -238,36 +269,15 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
             </div>
 
             {/* Timer Display */}
-            {(!isPresentationMode || timerRunning || timerSeconds < 30) && (
+            {displayTimerSeconds !== undefined && (
               <div className="flex items-center gap-1 bg-black/80 px-2 sm:px-2.5 py-1 rounded-xl border border-blue-500/50 shadow-md">
-                {!isPresentationMode && (
-                  <button
-                    onClick={() => setTimerRunning(!timerRunning)}
-                    className="text-blue-300 hover:text-white p-0.5"
-                    title={timerRunning ? 'Pause timer' : 'Start timer'}
-                  >
-                    {timerRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                  </button>
-                )}
                 <span
-                  className={`font-mono font-bold text-base sm:text-lg w-6 text-center ${
-                    timerSeconds <= 5 ? 'text-red-400 animate-pulse' : 'text-blue-200'
+                  className={`font-mono font-bold text-base sm:text-lg w-7 text-center ${
+                    displayTimerSeconds <= 5 ? 'text-red-400 animate-pulse' : 'text-blue-200'
                   }`}
                 >
-                  {timerSeconds}
+                  {displayTimerSeconds}s
                 </span>
-                {!isPresentationMode && (
-                  <button
-                    onClick={() => {
-                      setTimerRunning(false);
-                      setTimerSeconds(30);
-                    }}
-                    className="text-gray-400 hover:text-white p-0.5"
-                    title="Reset timer to 30s"
-                  >
-                    <RotateCcw className="w-3 h-3" />
-                  </button>
-                )}
               </div>
             )}
           </div>

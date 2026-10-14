@@ -108,3 +108,48 @@ export const DEFAULT_QUESTIONS: Question[] = [
     ],
   },
 ];
+
+export const DEFAULT_SETTINGS: import('../types').GameSettings = {
+  allowNegativeScores: false,
+  timerDuration: 30,
+  soundEnabled: true,
+  projectorSoundEnabled: false,
+  volume: 1.0,
+  autoSortLeaderboard: true,
+  enableCelebrationEffects: true,
+};
+
+export const INITIAL_GAME_STATE: import('../types').GameState = {
+  teams: INITIAL_TEAMS.map((t) => ({ ...t, strikes: 0 })),
+  activeTeamId: 'team-1',
+  activeView: 'leaderboard',
+  activeQuestionIndex: 0,
+  questions: DEFAULT_QUESTIONS,
+  strikes: 0,
+  lastStrikeTeamId: null,
+  timerSeconds: 30,
+  timerActive: false,
+  settings: DEFAULT_SETTINGS,
+  winnerDeclared: false,
+  lastActionText: 'Game ready',
+};
+
+export const createNewGameState = (resetScoresToZero = true): import('../types').GameState => ({
+  teams: INITIAL_TEAMS.map((t) => ({ ...t, score: resetScoresToZero ? 0 : t.score, strikes: 0 })),
+  activeTeamId: 'team-1',
+  activeView: 'leaderboard',
+  activeQuestionIndex: 0,
+  questions: JSON.parse(JSON.stringify(DEFAULT_QUESTIONS)).map((q: import('../types').Question) => ({
+    ...q,
+    isRoundAwarded: false,
+    awardedToTeamId: null,
+    answers: q.answers.map((a) => ({ ...a, isRevealed: false, isAwarded: false, awardedToTeamId: null })),
+  })),
+  strikes: 0,
+  lastStrikeTeamId: null,
+  timerSeconds: 30,
+  timerActive: false,
+  settings: DEFAULT_SETTINGS,
+  winnerDeclared: false,
+  lastActionText: 'New game started',
+});
