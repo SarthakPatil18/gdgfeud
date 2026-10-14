@@ -308,7 +308,7 @@ export const DedicatedHostPanel: React.FC = () => {
     updateAndBroadcast(`Removed strike from ${targetTeam.name}`, (prev) => ({
       ...prev,
       strikes: nextStrikes,
-      lastStrikeTeamId: teamId,
+      lastStrikeTeamId: nextStrikes === 0 && prev.lastStrikeTeamId === teamId ? null : teamId,
       teams: prev.teams.map((t) => (t.id === teamId ? { ...t, strikes: nextStrikes } : t)),
     }));
   };
@@ -319,6 +319,7 @@ export const DedicatedHostPanel: React.FC = () => {
     updateAndBroadcast(`Reset strikes for ${targetTeam?.name || 'team'}`, (prev) => ({
       ...prev,
       strikes: 0,
+      lastStrikeTeamId: prev.lastStrikeTeamId === resetTeamStrikesId ? null : prev.lastStrikeTeamId,
       teams: prev.teams.map((t) => (t.id === resetTeamStrikesId ? { ...t, strikes: 0 } : t)),
     }));
     setResetTeamStrikesId(null);

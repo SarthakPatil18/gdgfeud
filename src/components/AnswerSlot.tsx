@@ -29,7 +29,7 @@ export const AnswerSlot: React.FC<AnswerSlotProps> = ({
         
         {/* Flip container with 3D preserve */}
         <div
-          className={`w-full h-full rounded-[13px] relative transform-style-3d transition-transform duration-600 ease-out ${
+          className={`w-full h-full rounded-[13px] relative transform-style-3d transition-transform duration-250 ease-out ${
             isRevealed ? 'rotate-y-180' : ''
           }`}
         >

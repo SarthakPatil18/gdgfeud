@@ -78,28 +78,30 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
     return () => clearInterval(interval);
   }, [timerSecondsProp, localTimerRunning, localTimerSeconds]);
 
-  // Trigger visual strike flash only when strikes increase
-  const prevStrikesRef = React.useRef({ strikes, lastStrikeTeamId });
+  const currentTeamStrikes = lastStrikeTeamId
+    ? teams.find((t) => t.id === lastStrikeTeamId)?.strikes ?? strikes
+    : strikes;
+
+  // Trigger visual strike flash only when strikes increase, and immediately dismiss on clear or decrement
+  const prevStrikesRef = React.useRef({ strikes, lastStrikeTeamId, currentTeamStrikes });
   useEffect(() => {
     const prev = prevStrikesRef.current;
-    const currentTeamStrikes = lastStrikeTeamId
-      ? teams.find((t) => t.id === lastStrikeTeamId)?.strikes || 0
-      : strikes;
-    const prevTeamStrikes = prev.lastStrikeTeamId
-      ? teams.find((t) => t.id === prev.lastStrikeTeamId)?.strikes || 0
-      : prev.strikes;
+    prevStrikesRef.current = { strikes, lastStrikeTeamId, currentTeamStrikes };
 
-    prevStrikesRef.current = { strikes, lastStrikeTeamId };
+    // If strikes were cleared, reduced, or are 0, immediately dismiss the red flash overlay
+    if (currentTeamStrikes <= 0 || currentTeamStrikes < prev.currentTeamStrikes) {
+      setStrikeFlash(false);
+      return;
+    }
 
-    if (currentTeamStrikes > prevTeamStrikes) {
-      const startTimer = setTimeout(() => setStrikeFlash(true), 0);
-      const endTimer = setTimeout(() => setStrikeFlash(false), 1100);
+    if (currentTeamStrikes > prev.currentTeamStrikes) {
+      setStrikeFlash(true);
+      const endTimer = setTimeout(() => setStrikeFlash(false), 1200);
       return () => {
-        clearTimeout(startTimer);
         clearTimeout(endTimer);
       };
     }
-  }, [strikes, lastStrikeTeamId, teams]);
+  }, [strikes, lastStrikeTeamId, currentTeamStrikes]);
 
   const handleStrikeClick = () => {
     if (isPresentationMode) return;
@@ -128,8 +130,8 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
   return (
     <div className="relative w-full h-full flex flex-col justify-between p-3 sm:p-5 md:p-6 select-none">
       
-      {/* Strike Big Flash Overlay */}
-      {strikeFlash && (
+      {/* Strike Big Flash Overlay - only visible if strikeFlash is true AND team has strikes > 0 */}
+      {strikeFlash && currentTeamStrikes > 0 && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none bg-red-950/70 backdrop-blur-[2px] rounded-[18px]">
           {/* Team Banner if lastStrikeTeamId is set */}
           {lastStrikeTeamId && (
@@ -140,12 +142,7 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
 
           <div className="flex items-center gap-3 sm:gap-6 animate-strike">
             {Array.from({
-              length: Math.min(
-                lastStrikeTeamId
-                  ? teams.find((t) => t.id === lastStrikeTeamId)?.strikes || strikes
-                  : strikes,
-                3
-              ),
+              length: Math.min(currentTeamStrikes, 3),
             }).map((_, i) => (
               <div
                 key={i}
@@ -156,9 +153,7 @@ export const QuestionBoard: React.FC<QuestionBoardProps> = ({
             ))}
           </div>
 
-          {(lastStrikeTeamId
-            ? (teams.find((t) => t.id === lastStrikeTeamId)?.strikes || strikes) >= 3
-            : strikes >= 3) && (
+          {currentTeamStrikes >= 3 && (
             <div className="px-6 py-2 rounded-full bg-red-600 text-white font-team text-sm sm:text-xl uppercase tracking-wider shadow-[0_0_30px_#ef4444] mt-4 animate-pulse">
               XXX 3 STRIKES REACHED
             </div>

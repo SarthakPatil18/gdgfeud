@@ -1,5 +1,6 @@
 import type { AudioAssetKey } from '../types/audio';
 import { audioStorage } from './audioStorage';
+import correctAnswerMp3Url from '../assets/sounds/correct_answer.mp3';
 
 class SoundEngine {
   private ctx: AudioContext | null = null;
@@ -7,15 +8,34 @@ class SoundEngine {
   private volume: number = 1.0;
   private activeMusicAudio: HTMLAudioElement | null = null;
   private activeMusicKey: AudioAssetKey | null = null;
+  private audioBufferCache: Map<string, AudioBuffer> = new Map();
+  private preloadedAudioMap: Map<string, HTMLAudioElement> = new Map();
 
   constructor() {
-    // Initialized lazily on first user interaction
+    if (typeof window !== 'undefined') {
+      try {
+        const audio = new Audio(correctAnswerMp3Url);
+        audio.preload = 'auto';
+        this.preloadedAudioMap.set(correctAnswerMp3Url, audio);
+
+        const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AudioCtx) {
+          this.ctx = new AudioCtx();
+          this.preloadBuffer(correctAnswerMp3Url);
+        }
+      } catch {
+        // Ignored in test environment
+      }
+    }
   }
 
   public setEnabled(val: boolean) {
     this.enabled = val;
     if (!val) {
       this.stopActiveMusic();
+    } else {
+      this.ensureContext();
+      this.preloadBuffer(correctAnswerMp3Url);
     }
   }
 
@@ -38,6 +58,7 @@ class SoundEngine {
     try {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new AudioCtx();
+      this.preloadBuffer(correctAnswerMp3Url);
     } catch (e) {
       console.warn('AudioContext not supported', e);
     }
@@ -48,7 +69,24 @@ class SoundEngine {
       this.initContext();
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
+    }
+  }
+
+  private async preloadBuffer(url: string): Promise<AudioBuffer | null> {
+    if (this.audioBufferCache.has(url)) {
+      return this.audioBufferCache.get(url)!;
+    }
+    if (!this.ctx) return null;
+
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const decoded = await this.ctx.decodeAudioData(arrayBuffer);
+      this.audioBufferCache.set(url, decoded);
+      return decoded;
+    } catch {
+      return null;
     }
   }
 
@@ -74,17 +112,88 @@ class SoundEngine {
   public async playAsset(key: AudioAssetKey): Promise<{ success: boolean; isAuthentic: boolean }> {
     if (!this.enabled) return { success: false, isAuthentic: false };
 
-    try {
-      const url = await audioStorage.getAudioUrl(key);
-      if (url) {
-        // Authentic audio asset found! Play authentic soundtrack/cue
-        const isMusic = ['theme', 'faceoff', 'countdown', 'finalWinner'].includes(key);
+    // INSTANT ZERO-LATENCY FAST-PATH FOR ANSWER REVEAL (correctDing)
+    if (key === 'correctDing') {
+      this.ensureContext();
+      if (this.ctx && this.audioBufferCache.has(correctAnswerMp3Url)) {
+        const source = this.ctx.createBufferSource();
+        source.buffer = this.audioBufferCache.get(correctAnswerMp3Url)!;
+        const gainNode = this.ctx.createGain();
+        gainNode.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+        source.connect(gainNode);
+        gainNode.connect(this.ctx.destination);
+        source.start(0);
+        return { success: true, isAuthentic: true };
+      }
 
-        if (isMusic) {
-          this.stopActiveMusic();
+      // If buffer hasn't decoded yet, trigger preloaded HTMLAudio immediately
+      const preloaded = this.preloadedAudioMap.get(correctAnswerMp3Url);
+      if (preloaded) {
+        try {
+          preloaded.currentTime = 0;
+          preloaded.volume = this.volume;
+          preloaded.play().catch(() => {});
+          return { success: true, isAuthentic: true };
+        } catch {
+          // Handled below
+        }
+      }
+    }
+
+    let url: string | null = null;
+    try {
+      url = await audioStorage.getAudioUrl(key);
+    } catch {
+      // Handled below
+    }
+
+    if (!url && key === 'correctDing') {
+      url = correctAnswerMp3Url;
+    }
+
+    if (url) {
+      const isMusic = ['theme', 'faceoff', 'countdown', 'finalWinner'].includes(key);
+
+      if (isMusic) {
+        this.stopActiveMusic();
+      }
+
+      this.ensureContext();
+
+      // Zero-latency Web Audio buffer playback for SFX
+      if (!isMusic && this.ctx) {
+        try {
+          let buffer = this.audioBufferCache.get(url);
+          if (!buffer) {
+            buffer = (await this.preloadBuffer(url)) || undefined;
+          }
+          if (buffer) {
+            const source = this.ctx.createBufferSource();
+            source.buffer = buffer;
+            const gainNode = this.ctx.createGain();
+            gainNode.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+            source.connect(gainNode);
+            gainNode.connect(this.ctx.destination);
+            source.start(0);
+            return { success: true, isAuthentic: true };
+          }
+        } catch (e) {
+          console.warn('Buffer playback error, trying HTML Audio fallback:', e);
+        }
+      }
+
+      // HTML Audio fallback or music stream
+      try {
+        let audio = this.preloadedAudioMap.get(url);
+        if (!audio || isMusic) {
+          audio = new Audio(url);
+          if (!isMusic) {
+            this.preloadedAudioMap.set(url, audio);
+          }
+        } else {
+          audio.currentTime = 0;
         }
 
-        const audio = new Audio(url);
         audio.volume = this.volume;
 
         if (isMusic) {
@@ -100,9 +209,14 @@ class SoundEngine {
 
         await audio.play();
         return { success: true, isAuthentic: true };
+      } catch (e) {
+        console.warn(`Could not play audio element for key "${key}":`, e);
       }
-    } catch (e) {
-      console.warn(`Could not play authentic audio for key "${key}":`, e);
+    }
+
+    // Never play old synth chime for correctDing
+    if (key === 'correctDing') {
+      return { success: false, isAuthentic: true };
     }
 
     // Authentic track is missing locally: play subtle synthesized placeholder cue
@@ -211,6 +325,20 @@ class SoundEngine {
   // Synthesizers
   private synthChime() {
     if (!this.ctx) return;
+
+    // If preloaded buffer for authentic correct answer MP3 exists, play it instead of the old synth chime
+    if (this.audioBufferCache.has(correctAnswerMp3Url)) {
+      const buffer = this.audioBufferCache.get(correctAnswerMp3Url)!;
+      const source = this.ctx.createBufferSource();
+      source.buffer = buffer;
+      const gainNode = this.ctx.createGain();
+      gainNode.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+      source.connect(gainNode);
+      gainNode.connect(this.ctx.destination);
+      source.start(0);
+      return;
+    }
+
     const now = this.ctx.currentTime;
     const osc1 = this.ctx.createOscillator();
     const osc2 = this.ctx.createOscillator();

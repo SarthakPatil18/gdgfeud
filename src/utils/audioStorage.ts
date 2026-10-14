@@ -1,4 +1,13 @@
 import { AUDIO_EVENT_DEFINITIONS, type AudioAssetKey, type AudioAssetMetadata } from '../types/audio';
+import correctAnswerMp3Url from '../assets/sounds/correct_answer.mp3';
+
+export const BUILT_IN_AUDIO_MAP: Partial<Record<AudioAssetKey, { url: string; fileName: string; fileSize: number }>> = {
+  correctDing: {
+    url: correctAnswerMp3Url,
+    fileName: 'Correct Answer - Family Feud Sound Effect - Free Download (HD) (1).mp3',
+    fileSize: 80946,
+  },
+};
 
 const DB_NAME = 'gdg_feud_audio_assets_v1';
 const DB_VERSION = 1;
@@ -127,7 +136,10 @@ class AudioStorage {
     }
 
     const blob = await this.getAudioBlob(key);
-    if (!blob) return null;
+    if (!blob) {
+      const builtIn = BUILT_IN_AUDIO_MAP[key];
+      return builtIn ? builtIn.url : null;
+    }
 
     const url = URL.createObjectURL(blob);
     this.objectUrlCache.set(key, url);
@@ -160,15 +172,16 @@ class AudioStorage {
   public async getAllMetadata(): Promise<Record<AudioAssetKey, AudioAssetMetadata>> {
     const result: Record<AudioAssetKey, AudioAssetMetadata> = {} as Record<AudioAssetKey, AudioAssetMetadata>;
 
-    // Initialize all as unconfigured by default
+    // Initialize with built-in sounds or blank defaults
     AUDIO_EVENT_DEFINITIONS.forEach((def) => {
+      const builtIn = BUILT_IN_AUDIO_MAP[def.key];
       result[def.key] = {
         key: def.key,
-        fileName: '',
-        fileSize: 0,
-        mimeType: '',
-        updatedAt: 0,
-        isConfigured: false,
+        fileName: builtIn ? builtIn.fileName : '',
+        fileSize: builtIn ? builtIn.fileSize : 0,
+        mimeType: builtIn ? 'audio/mpeg' : '',
+        updatedAt: builtIn ? 1728864000000 : 0,
+        isConfigured: !!builtIn,
       };
     });
 
