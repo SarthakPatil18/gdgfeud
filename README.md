@@ -221,6 +221,28 @@ Quick-reference table of hotkeys available across views during live gameplay:
 
 ---
 
+## Auditorium Operations Runbook
+
+A recommended checklist for AV technicians and event MCs running GDG Feud in an auditorium:
+
+### 1. 30 Minutes Pre-Show (Setup & Sound Check)
+- [ ] Connect host laptop to auditorium HDMI / projector or open `/display` on the presentation machine.
+- [ ] Ensure the browser audio policy is satisfied (click anywhere in `/display` to permit Web Audio autoplay).
+- [ ] Open the **Audio Assets** modal in `/host` and test play `theme`, `correctDing`, and `strikeBuzzer`.
+- [ ] Switch projector display to Fullscreen (<kbd>F</kbd>).
+
+### 2. Live Match Execution
+- **Face-Off Phase**: Call two row representatives to the front podium. Play `faceoff` music. Reveal answer upon first correct buzz.
+- **In-Play Guessing**: The row with control guesses remaining answers. On a correct guess, press the corresponding answer number (<kbd>1</kbd>–<kbd>6</kbd>).
+- **Strikes**: On a wrong answer, hit <kbd>Shift</kbd> + `<row>` or click the strike card.
+- **Steal Opportunity**: When a row receives 3 strikes, the steal alert triggers. Announce the other 3 rows' chance to steal. Award accumulated bank points with one click.
+
+### 3. Tiebreaker & Victory Celebration
+- In the event of a tie score between rows, load a Sudden Death tiebreaker round (single #1 answer).
+- On match conclusion, hit the crown button on the winning row to trigger victory fanfare and fullscreen confetti cannon.
+
+---
+
 ## Live Production Links (Vercel)
 
 * **Production URL:** [https://gdg-feud.vercel.app](https://gdg-feud.vercel.app)
