@@ -169,6 +169,37 @@ When operating on the projector screen or using an onstage presenter remote clic
 
 ---
 
+## Question Management & Custom Rounds
+
+Hosts can customize questions on the fly or load custom game packages for special events.
+
+### Built-in Question Manager
+In the Host Control Panel (`/host`), click **Manage Questions** to open the interactive editor:
+- **Add / Edit / Delete Questions**: Update question prompts, point multipliers, and round names.
+- **Answer Slots**: Configure 4 to 8 ranked answers with point values (standard Family Feud total: 100 points).
+- **Point Multipliers**: Support for single, double, and triple point rounds (e.g. Round 3 Double Points, Round 4 Triple Points).
+- **Import / Export**: Export question sets as JSON files to share between organizers or backup before an event.
+
+### Question Data Schema
+Questions are structured using the following TypeScript interface:
+```typescript
+interface Answer {
+  id: string;
+  text: string;
+  points: number;
+  revealed: boolean;
+}
+
+interface Question {
+  id: string;
+  text: string;
+  multiplier: 1 | 2 | 3;
+  answers: Answer[];
+}
+```
+
+---
+
 ## Live Production Links (Vercel)
 
 * **Production URL:** [https://gdg-feud.vercel.app](https://gdg-feud.vercel.app)
