@@ -200,6 +200,27 @@ interface Question {
 
 ---
 
+## Keyboard Shortcuts Reference
+
+Quick-reference table of hotkeys available across views during live gameplay:
+
+| Key Binding | View | Action |
+|---|---|---|
+| <kbd>1</kbd> – <kbd>6</kbd> | Host & Display | Toggle / Reveal answer slot 1 through 6 |
+| <kbd>Shift</kbd> + <kbd>1</kbd> | Host | Add strike to **Row 1** (Red) |
+| <kbd>Shift</kbd> + <kbd>2</kbd> | Host | Add strike to **Row 2** (Blue) |
+| <kbd>Shift</kbd> + <kbd>3</kbd> | Host | Add strike to **Row 3** (Green) |
+| <kbd>Shift</kbd> + <kbd>4</kbd> | Host | Add strike to **Row 4** (Purple) |
+| <kbd>X</kbd> | Host & Display | Trigger wrong-answer buzzer & strike cue |
+| <kbd>Space</kbd> / <kbd>Enter</kbd> | Display | Reveal the next available unrevealed answer tile |
+| <kbd>→</kbd> / <kbd>PageDown</kbd> | Display | Presenter remote advancement to next answer |
+| <kbd>Q</kbd> | Host | Switch display to **Question Board** mode |
+| <kbd>L</kbd> | Host | Switch display to **Leaderboard** mode |
+| <kbd>F</kbd> | Host & Display | Toggle browser fullscreen mode |
+| <kbd>Ctrl</kbd> + <kbd>Z</kbd> | Host | Undo last scoring or strike action |
+
+---
+
 ## Live Production Links (Vercel)
 
 * **Production URL:** [https://gdg-feud.vercel.app](https://gdg-feud.vercel.app)
