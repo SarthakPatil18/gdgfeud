@@ -300,3 +300,37 @@ npm run preview
 npm run lint
 npm run test
 ```
+
+---
+
+## Troubleshooting & FAQ
+
+#### Q: The projector display is not playing any sound.
+> **A:** Modern browsers restrict audio playback until user interaction occurs on that tab. Click anywhere inside the `/display` window or press any key once after launching to activate the Web Audio Context.
+
+#### Q: The projector display isn't updating when I reveal answers in `/host`.
+> **A:** If running in different browser windows on the same machine, make sure both tabs are using the same origin (e.g., both on `localhost:5173` or both on the local network IP). `BroadcastChannel` communicates strictly across the same origin. If running on separate laptops across Wi-Fi, ensure the WebSocket relay server is running and reachable.
+
+#### Q: How do I recover from an accidental wrong click or score award?
+> **A:** Use the built-in **Undo** functionality (<kbd>Ctrl</kbd> + <kbd>Z</kbd> or the Undo button in the top toolbar of `/host`).
+
+#### Q: Can I run this completely offline without an internet connection?
+> **A:** Yes! Once the repository dependencies are installed and built, the entire application, sound synthesizer, and IndexedDB audio cache run completely offline with 0 external network dependencies.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/amazing-feature`.
+3. Commit your changes: `git commit -m "feat: add amazing feature"`.
+4. Run tests and linting: `npm run lint && npm run test`.
+5. Push to the branch: `git push origin feature/amazing-feature`.
+6. Open a Pull Request.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) — see the LICENSE file for details. Built with ❤️ for GDG community events and hackathons.
