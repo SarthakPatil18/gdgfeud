@@ -41,6 +41,48 @@ GDG FEUD is designed for college orientation events, tech community meetups, and
 - **Real-Time State Bus**: Dual broadcast pipeline using browser `BroadcastChannel` for same-device multi-monitor tabs and WebSocket for cross-network devices.
 - **Party FX & Confetti**: Canvas confetti physics celebration on round wins and championship crowns.
 
+---
+
+## Architecture & Real-Time Sync
+
+GDG FEUD utilizes a resilient hybrid state distribution strategy optimized for auditorium environments:
+
+```text
+  +-----------------------------------------------------------------------+
+  |                        Host Operator Laptop                           |
+  |  +------------------------+             +---------------------------+ |
+  |  |   Host View (/host)    | <---------> | IndexedDB Audio Storage   | |
+  |  +-----------+------------+             +---------------------------+ |
+  +--------------|--------------------------------------------------------+
+                 |
+         +-------+-------+
+         |               |
+         v               v
+  [BroadcastChannel]  [WebSocket Relay Server (ws://0.0.0.0:5174)]
+   (Zero-latency       (Cross-device local Wi-Fi sync)
+    same-machine)        |
+         |               |
+         +-------+-------+
+                 |
+                 v
+  +-----------------------------------------------------------------------+
+  |                     Projector Display (/display)                      |
+  |  - Fullscreen Flip Board UI                                           |
+  |  - Audience Strike FX & Winner Podium                                 |
+  |  - Synchronized Audio Player                                          |
+  +-----------------------------------------------------------------------+
+```
+
+### State Synchronization Layers
+1. **Primary: `BroadcastChannel` API**:
+   - Zero-latency, memory-efficient intra-browser channel.
+   - Ideal when the host machine connects directly to the projector via HDMI or USB-C extended display.
+2. **Secondary: WebSocket Relay Service**:
+   - Allows host and projector to run on completely separate laptops connected over the venue Wi-Fi.
+   - Automatic reconnect logic with heartbeat keep-alive.
+3. **Local Persistence: IndexedDB**:
+   - Audio files and question sets are stored client-side in the browser storage, surviving accidental tab refreshes or lost internet connection.
+
 ## Authentic Audio Asset Mapping & Host Upload
 
 GDG FEUD features an explicit audio asset mapping for the 8 recognizable Family Feud soundtracks and cues.
