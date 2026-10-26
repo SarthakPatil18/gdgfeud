@@ -258,3 +258,45 @@ A recommended checklist for AV technicians and event MCs running GDG Feud in an 
 * **Projector Display:** `http://localhost:5173/display`
 * **Local Network IP (Same Wi-Fi):** `http://192.168.0.101:5173`
 * **Real-time Sync WebSocket:** `ws://0.0.0.0:5174`
+
+---
+
+## Installation & Local Setup
+
+### Prerequisites
+- **Node.js**: v18.0.0 or later (Node 20+ recommended)
+- **npm** or **pnpm** / **yarn**
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/SarthakPatil18/gdgfeud.git
+cd gdgfeud
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Start Development Server
+```bash
+npm run dev
+```
+The application will launch on `http://localhost:5173`. Open `/host` on your control display and `/display` on the secondary monitor or projector.
+
+### 4. Build for Production
+To generate an optimized production bundle:
+```bash
+npm run build
+```
+
+To preview the built production bundle locally:
+```bash
+npm run preview
+```
+
+### 5. Running Linting & Tests
+```bash
+npm run lint
+npm run test
+```
