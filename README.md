@@ -83,6 +83,21 @@ GDG FEUD utilizes a resilient hybrid state distribution strategy optimized for a
 3. **Local Persistence: IndexedDB**:
    - Audio files and question sets are stored client-side in the browser storage, surviving accidental tab refreshes or lost internet connection.
 
+---
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| **React 19** | Concurrent UI rendering and component hierarchy |
+| **TypeScript 5+** | Full type safety across game state, audio events, and WebSocket payloads |
+| **Vite 8** | Next-generation fast frontend tooling and HMR |
+| **Tailwind CSS 4** | Utility-first styling with modern CSS engine `@tailwindcss/vite` |
+| **Lucide React** | Clean, accessible iconography for host controls |
+| **Canvas Confetti** | Dynamic celebratory particle rendering on round & match wins |
+| **WebSocket (`ws`)** | Real-time cross-device broadcast synchronization |
+| **Oxlint & Vitest** | High-performance linting and unit test framework |
+
 ## Authentic Audio Asset Mapping & Host Upload
 
 GDG FEUD features an explicit audio asset mapping for the 8 recognizable Family Feud soundtracks and cues.
