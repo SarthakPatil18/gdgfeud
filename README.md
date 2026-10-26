@@ -29,6 +29,18 @@ GDG FEUD is designed for college orientation events, tech community meetups, and
 - [Troubleshooting & FAQ](#troubleshooting--faq)
 - [License](#license)
 
+---
+
+## Features Overview
+
+- **Auditorium Dual-Screen Flow**: Seamless synchronization between the Host Control Panel and public-facing Projector Display.
+- **Low-Latency Audio Engine**: Synthesized web audio fallback combined with host-uploadable high-fidelity audio tracks stored in IndexedDB.
+- **Dynamic 3D Flip Cards**: TV-authentic answer tile reveals with perspective CSS transforms and responsive grid layouts.
+- **Multi-Row Audience Engagement**: Unique row-based scoring mechanism dividing attendees into 4 auditorium zones with independent strike counters.
+- **Interactive Presenter Support**: Stage presenters can tap answers on touchscreens or use wireless presentation remotes directly on the display view.
+- **Real-Time State Bus**: Dual broadcast pipeline using browser `BroadcastChannel` for same-device multi-monitor tabs and WebSocket for cross-network devices.
+- **Party FX & Confetti**: Canvas confetti physics celebration on round wins and championship crowns.
+
 ## Authentic Audio Asset Mapping & Host Upload
 
 GDG FEUD features an explicit audio asset mapping for the 8 recognizable Family Feud soundtracks and cues.
