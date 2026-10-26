@@ -14,6 +14,21 @@ GDG FEUD is designed for college orientation events, tech community meetups, and
 
 ---
 
+## Table of Contents
+
+- [Features Overview](#features-overview)
+- [Architecture & Real-Time Sync](#architecture--real-time-sync)
+- [Tech Stack](#tech-stack)
+- [Authentic Audio Asset Mapping & Host Upload](#authentic-audio-asset-mapping--host-upload)
+- [Row-Specific Strikes & Steal Mechanics](#row-specific-strikes--steal-mechanics-gdg-feud-rules)
+- [Interactive Projector Display Controls](#interactive-projector-display-display-controls)
+- [Question Management & Custom Rounds](#question-management--custom-rounds)
+- [Keyboard Shortcuts Reference](#keyboard-shortcuts-reference)
+- [Auditorium Operations Runbook](#auditorium-operations-runbook)
+- [Installation & Local Setup](#installation--local-setup)
+- [Troubleshooting & FAQ](#troubleshooting--faq)
+- [License](#license)
+
 ## Authentic Audio Asset Mapping & Host Upload
 
 GDG FEUD features an explicit audio asset mapping for the 8 recognizable Family Feud soundtracks and cues.
