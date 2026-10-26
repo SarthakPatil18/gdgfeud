@@ -1,10 +1,16 @@
 # GDG FEUD — Interactive Family Feud-Style Scoreboard
 ### Dual-Display Auditorium System & Authentic Audio Mapping
 
-GDG FEUD is designed for college orientation events and tech hackathons with a **Dual-Display Architecture**:
-1. **Host Control Panel (`/host`)** operated on the host's laptop.
-2. **Projector Display (`/display`)** projected onto the auditorium screen.
-3. **Launcher & Setup Hub (`/`)** for quick launch and display setup.
+[![React](https://img.shields.io/badge/React-19-61dafb?style=flat&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646cff?style=flat&logo=vite)](https://vite.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-4-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+GDG FEUD is designed for college orientation events, tech community meetups, and hackathons with an authentic **Dual-Display Architecture**:
+1. **Host Control Panel (`/host`)** operated on the host's laptop for live game orchestration.
+2. **Projector Display (`/display`)** projected onto the auditorium stage screen with real-time flip animations.
+3. **Launcher & Setup Hub (`/`)** for rapid configuration, quick navigation, and local network display setup.
 
 ---
 
